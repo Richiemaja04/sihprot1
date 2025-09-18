@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - TimetableAI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .teacher-dashboard {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .welcome-section h1 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .welcome-section p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            transition: all var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-large);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timetable-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .mini-timetable {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 1px;
+            background: var(--glass-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .mini-cell {
+            background: var(--glass-bg);
+            padding: var(--spacing-sm);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .mini-header {
+            background: rgba(102, 126, 234, 0.1);
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.7rem;
+        }
+
+        .mini-cell.has-class {
+            background: rgba(102, 126, 234, 0.1);
+            cursor: pointer;
+        }
+
+        .mini-cell.has-class:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .quick-actions {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+        }
+
+        .actions-grid {
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all var(--transition-medium);
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .leave-requests {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+        }
+
+        .leave-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .leave-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .leave-info {
+            flex: 1;
+        }
+
+        .leave-dates {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .leave-status {
+            font-size: 0.8rem;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .analytics-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            margin-top: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .teacher-dashboard {
+                padding: 80px var(--spacing-md) var(--spacing-md);
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .mini-timetable {
+                font-size: 0.7rem;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="teacher-dashboard">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-calendar-alt"></i>
+                <span>TimetableAI</span>
+            </div>
+            <div class="nav-links">
+                <span id="userGreeting" class="nav-link">Loading...</span>
+                <button class="btn-login" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header slide-up">
+            <div class="welcome-section">
+                <h1 id="welcomeTitle">Welcome back!</h1>
+                <p id="welcomeSubtitle">Here's your teaching dashboard</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn-primary" onclick="showLeaveModal()">
+                    <i class="fas fa-calendar-plus"></i> Request Leave
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards slide-up-delay" id="statsCards">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- My Timetable Section -->
+                <div class="timetable-section slide-up">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-week"></i>
+                            My Timetable
+                        </h2>
+                        <button class="btn-secondary" onclick="viewFullTimetable()">
+                            <i class="fas fa-expand"></i> View Full
+                        </button>
+                    </div>
+                    <div class="mini-timetable" id="miniTimetable">
+                        <!-- Mini timetable will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="analytics-section slide-up">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            Teaching Analytics
+                        </h2>
+                        <button class="btn-secondary" onclick="viewDetailedAnalytics()">
+                            <i class="fas fa-chart-bar"></i> Detailed View
+                        </button>
+                    </div>
+                    <div class="analytics-grid" id="analyticsGrid">
+                        <!-- Analytics will be loaded here -->
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        <i class="fas fa-chart-area" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <span style="margin-left: 1rem; opacity: 0.5;">Workload distribution chart</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Quick Actions -->
+                <div class="quick-actions slide-up">
+                    <h3 class="section-title">
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </h3>
+                    <div class="actions-grid">
+                        <div class="action-btn" onclick="showLeaveModal()">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Request Leave</span>
+                        </div>
+                        <div class="action-btn" onclick="checkConflicts()">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Check Conflicts</span>
+                        </div>
+                        <div class="action-btn" onclick="viewSubstitutes()">
+                            <i class="fas fa-users"></i>
+                            <span>Find Substitutes</span>
+                        </div>
+                        <div class="action-btn" onclick="submitFeedback()">
+                            <i class="fas fa-comment"></i>
+                            <span>Submit Feedback</span>
+                        </div>
+                        <div class="action-btn" onclick="exportSchedule()">
+                            <i class="fas fa-download"></i>
+                            <span>Export Schedule</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Leave Requests -->
+                <div class="leave-requests slide-up">
+                    <h3 class="section-title">
+                        <i class="fas fa-calendar-times"></i>
+                        Recent Leaves
+                    </h3>
+                    <div class="leave-list" id="leaveList">
+                        <!-- Leave requests will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div id="leaveModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3>Request Leave</h3>
+                <span class="close-btn" onclick="hideLeaveModal()">×</span>
+            </div>
+            <div class="modal-body">
+                <form id="leaveForm" class="login-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" class="form-input" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate" name="endDate" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="leaveType">Leave Type</label>
+                        <select id="leaveType" name="leaveType" class="form-select" required>
+                            <option value="">Select Type...</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="personal">Personal Leave</option>
+                            <option value="emergency">Emergency Leave</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="substituteTeacher">Substitute Teacher (Optional)</label>
+                        <select id="substituteTeacher" name="substituteTeacher" class="form-select">
+                            <option value="">Select Substitute...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="leaveReason">Reason</label>
+                        <textarea id="leaveReason" name="leaveReason" class="form-input" rows="3" 
+                                placeholder="Please provide a reason for your leave request..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Timetable Modal -->
+    <div id="timetableModal" class="modal">
+        <div class="modal-content glass-card" style="max-width: 1000px; width: 95%;">
+            <div class="modal-header">
+                <h3>My Complete Timetable</h3>
+                <span class="close-btn" onclick="hideTimetableModal()">×</span>
+            </div>
+            <div class="modal-body" id="fullTimetableContent">
+                <!-- Full timetable will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script>
+        class TeacherDashboard {
+            constructor() {
+                this.teacherData = null;
+                this.workloadData = null;
+                this.leaveRequests = [];
+                this.substitutes = [];
+                
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.checkAuth();
+                    await this.loadDashboardData();
+                    this.renderDashboard();
+                    this.setupEventListeners();
+                    this.setupWebSocketHandlers();
+                } catch (error) {
+                    console.error('Failed to initialize teacher dashboard:', error);
+                    showNotification('Failed to load dashboard', 'error');
+                }
+            }
+
+            async checkAuth() {
+                const userType = localStorage.getItem('user_type');
+                if (userType !== 'teacher') {
+                    window.location.href = '/';
+                    return;
+                }
+
+                try {
+                    const user = await api.getCurrentUser();
+                    document.getElementById('userGreeting').textContent = `Hello, ${user.full_name}`;
+                    document.getElementById('welcomeTitle').textContent = `Welcome back, ${user.full_name.split(' ')[0]}!`;
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                    window.location.href = '/';
+                }
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Load teacher timetable
+                    this.teacherData = await api.getMyTimetable();
+                    
+                    // Load workload summary
+                    this.workloadData = await api.getWorkloadSummary();
+                    
+                    // Load leave requests
+                    this.leaveRequests = await api.getMyLeaveRequests();
+                    
+                    // Load available substitutes
+                    this.substitutes = await api.getAvailableSubstitutes();
+
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    throw error;
+                }
+            }
+
+            renderDashboard() {
+                this.renderStatsCards();
+                this.renderMiniTimetable();
+                this.renderAnalytics();
+                this.renderLeaveRequests();
+                this.populateSubstitutes();
+            }
+
+            renderStatsCards() {
+                const container = document.getElementById('statsCards');
+                container.innerHTML = '';
+
+                const stats = [
+                    {
+                        icon: 'fas fa-clock',
+                        value: this.workloadData.total_hours_per_week,
+                        label: 'Hours/Week'
+                    },
+                    {
+                        icon: 'fas fa-book',
+                        value: this.workloadData.subjects_taught.length,
+                        label: 'Subjects'
+                    },
+                    {
+                        icon: 'fas fa-users',
+                        value: this.workloadData.batches_handled.length,
+                        label: 'Batches'
+                    },
+                    {
+                        icon: 'fas fa-door-open',
+                        value: Object.keys(this.workloadData.room_utilization).length,
+                        label: 'Rooms'
+                    }
+                ];
+
+                stats.forEach(stat => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card hover-lift';
+                    card.innerHTML = `
+                        <div class="stat-icon">
+                            <i class="${stat.icon}"></i>
+                        </div>
+                        <div class="stat-value">${stat.value}</div>
+                        <div class="stat-label">${stat.label}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            renderMiniTimetable() {
+                const container = document.getElementById('miniTimetable');
+                container.innerHTML = '';
+
+                // Time header
+                const timeHeader = document.createElement('div');
+                timeHeader.className = 'mini-cell mini-header';
+                timeHeader.textContent = 'Time';
+                container.appendChild(timeHeader);
+
+                // Day headers
+                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+                days.forEach(day => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'mini-cell mini-header';
+                    dayHeader.textContent = day;
+                    container.appendChild(dayHeader);
+                });
+
+                // Create a simplified view (first 6 hours)
+                for (let hour = 1; hour <= 6; hour++) {
+                    // Time cell
+                    const timeCell = document.createElement('div');
+                    timeCell.className = 'mini-cell mini-header';
+                    timeCell.textContent = `H${hour}`;
+                    container.appendChild(timeCell);
+
+                    // Day cells
+                    days.forEach((day, dayIndex) => {
+                        const fullDay = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][dayIndex];
+                        const classInfo = this.teacherData.timetable.find(entry => 
+                            entry.day === fullDay && entry.hour === hour
+                        );
+
+                        const cell = document.createElement('div');
+                        if (classInfo) {
+                            cell.className = 'mini-cell has-class';
+                            cell.innerHTML = `
+                                <strong style="font-size: 0.7rem;">${classInfo.subject_name.substring(0, 8)}${classInfo.subject_name.length > 8 ? '...' : ''}</strong>
+                                <small>${classInfo.batch_id}</small>
+                            `;
+                            cell.onclick = () => this.showClassDetails(classInfo);
+                        } else {
+                            cell.className = 'mini-cell';
+                            cell.innerHTML = '<small style="color: var(--text-muted);">Free</small>';
+                        }
+                        container.appendChild(cell);
+                    });
+                }
+            }
+
+            renderAnalytics() {
+                const container = document.getElementById('analyticsGrid');
+                container.innerHTML = '';
+
+                // Calculate some metrics
+                const totalHours = this.workloadData.total_hours_per_week;
+                const maxHours = 25; // Assumed maximum
+                const utilizationPercent = Math.round((totalHours / maxHours) * 100);
+                
+                const busiestDay = Object.entries(this.workloadData.hours_by_day)
+                    .reduce((max, [day, hours]) => hours > max.hours ? {day, hours} : max, {day: 'None', hours: 0});
+
+                const metrics = [
+                    {
+                        value: `${utilizationPercent}%`,
+                        label: 'Workload Utilization'
+                    },
+                    {
+                        value: busiestDay.day.substring(0, 3),
+                        label: 'Busiest Day'
+                    },
+                    {
+                        value: `${busiestDay.hours}h`,
+                        label: 'Max Daily Hours'
+                    },
+                    {
+                        value: Math.round(totalHours / 5),
+                        label: 'Avg Hours/Day'
+                    }
+                ];
+
+                metrics.forEach(metric => {
+                    const card = document.createElement('div');
+                    card.className = 'metric-card';
+                    card.innerHTML = `
+                        <div class="metric-value">${metric.value}</div>
+                        <div class="metric-label">${metric.label}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            renderLeaveRequests() {
+                const container = document.getElementById('leaveList');
+                container.innerHTML = '';
+
+                if (this.leaveRequests.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; color: var(--text-muted); padding: var(--spacing-lg);">
+                            <i class="fas fa-calendar-check" style="font-size: 2rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
+                            <p>No leave requests</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Show only recent 3 requests
+                const recentLeaves = this.leaveRequests.slice(0, 3);
+                
+                recentLeaves.forEach(leave => {
+                    const item = document.createElement('div');
+                    item.className = 'leave-item';
+                    item.innerHTML = `
+                        <div class="leave-info">
+                            <div class="leave-dates">
+                                ${this.formatDate(leave.start_date)} - ${this.formatDate(leave.end_date)}
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">
+                                ${leave.leave_type} leave
+                            </div>
+                        </div>
+                        <div class="leave-status status-${leave.status}">
+                            ${leave.status}
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+
+            populateSubstitutes() {
+                const select = document.getElementById('substituteTeacher');
+                select.innerHTML = '<option value="">Select Substitute...</option>';
+                
+                this.substitutes.forEach(substitute => {
+                    const option = document.createElement('option');
+                    option.value = substitute.employee_id;
+                    option.textContent = `${substitute.full_name} (${substitute.current_workload}h)`;
+                    select.appendChild(option);
+                });
+            }
+
+            setupEventListeners() {
+                // Leave form submission
+                const leaveForm = document.getElementById('leaveForm');
+                leaveForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitLeaveRequest();
+                });
+
+                // Modal close handlers
+                ['leaveModal', 'timetableModal'].forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Set minimum date for leave requests
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('startDate').min = today;
+                document.getElementById('endDate').min = today;
+
+                // Update end date minimum when start date changes
+                document.getElementById('startDate').addEventListener('change', (e) => {
+                    document.getElementById('endDate').min = e.target.value;
+                });
+            }
+
+            setupWebSocketHandlers() {
+                // Listen for real-time updates
+                window.addEventListener('timetableGenerationComplete', () => {
+                    this.refreshData();
+                });
+
+                window.addEventListener('teacherLeaveUpdate', () => {
+                    this.loadDashboardData().then(() => this.renderLeaveRequests());
+                });
+            }
+
+            async submitLeaveRequest() {
+                const form = document.getElementById('leaveForm');
+                const formData = new FormData(form);
+                
+                const leaveData = {
+                    start_date: formData.get('startDate'),
+                    end_date: formData.get('endDate'),
+                    leave_type: formData.get('leaveType'),
+                    reason: formData.get('leaveReason'),
+                    substitute_faculty_id: formData.get('substituteTeacher') || null
+                };
+
+                try {
+                    await api.requestLeave(leaveData);
+                    showNotification('Leave request submitted successfully!', 'success');
+                    this.hideLeaveModal();
+                    
+                    // Refresh leave requests
+                    this.leaveRequests = await api.getMyLeaveRequests();
+                    this.renderLeaveRequests();
+                    
+                } catch (error) {
+                    showNotification(error.message || 'Failed to submit leave request', 'error');
+                }
+            }
+
+            showClassDetails(classInfo) {
+                showNotification(`${classInfo.subject_name} - ${classInfo.batch_id} in ${classInfo.room_id}`, 'info');
+            }
+
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+
+            async refreshData() {
+                try {
+                    await this.loadDashboardData();
+                    this.renderDashboard();
+                    showNotification('Dashboard refreshed!', 'success');
+                } catch (error) {
+                    showNotification('Failed to refresh dashboard', 'error');
+                }
+            }
+
+            // Modal functions
+            hideLeaveModal() {
+                const modal = document.getElementById('leaveModal');
+                modal.style.display = 'none';
+                document.getElementById('leaveForm').reset();
+            }
+
+            hideTimetableModal() {
+                const modal = document.getElementById('timetableModal');
+                modal.style.display = 'none';
+            }
+        }
+
+        // Global functions
+        function showLeaveModal() {
+            const modal = document.getElementById('leaveModal');
+            modal.style.display = 'flex';
+        }
+
+        function hideLeaveModal() {
+            if (window.teacherDashboard) {
+                window.teacherDashboard.hideLeaveModal();
+            }
+        }
+
+        function viewFullTimetable() {
+            const modal = document.getElementById('timetableModal');
+            const content = document.getElementById('fullTimetableContent');
+            
+            // Create full timetable view
+            content.innerHTML = `
+                <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);">
+                    <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: var(--spacing-md);"></i>
+                    <p>Full timetable view coming soon!</p>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function hideTimetableModal() {
+            if (window.teacherDashboard) {
+                window.teacherDashboard.hideTimetableModal();
+            }
+        }
+
+        async function checkConflicts() {
+            try {
+                const conflicts = await api.checkScheduleConflicts();
+                if (conflicts.total_conflicts === 0) {
+                    showNotification('No schedule conflicts found!', 'success');
+                } else {
+                    showNotification(`Found ${conflicts.total_conflicts} schedule conflicts`, 'warning');
+                }
+            } catch (error) {
+                showNotification('Failed to check conflicts', 'error');
+            }
+        }
+
+        function viewSubstitutes() {
+            showNotification('Substitute teachers list in development', 'info');
+        }
+
+        function submitFeedback() {
+            showNotification('Feedback system coming soon!', 'info');
+        }
+
+        function exportSchedule() {
+            showNotification('Export functionality coming soon!', 'info');
+        }
+
+        function viewDetailedAnalytics() {
+            showNotification('Detailed analytics coming soon!', 'info');
+        }
+
+        async function refreshData() {
+            if (window.teacherDashboard) {
+                await window.teacherDashboard.refreshData();
+            }
+        }
+
+        async function logout() {
+            try {
+                await api.logout();
+            } catch (error) {
+                // Logout anyway
+                window.location.href = '/';
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.teacherDashboard = new TeacherDashboard();
+        });
+    </script>
+</body>
+</html>

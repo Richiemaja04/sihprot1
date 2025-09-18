@@ -1,0 +1,9 @@
+class_id,room_name,capacity,room_type,building
+CR001,Computer Lab 1,40,Laboratory,Building A
+CR002,Computer Lab 2,35,Laboratory,Building A
+CR003,Lecture Hall 1,100,Lecture Hall,Building B
+CR004,Lecture Hall 2,80,Lecture Hall,Building B
+CR005,Electronics Lab 1,30,Laboratory,Building C
+CR006,Electronics Lab 2,25,Laboratory,Building C
+CR007,Seminar Room 1,50,Classroom,Building B
+CR008,Seminar Room 2,45,Classroom,Building B

@@ -1,0 +1,134 @@
+# FastAPI and web framework dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+pydantic-settings==2.1.0
+
+# Database dependencies
+sqlalchemy==2.0.23
+alembic==1.13.1
+
+# Authentication
+python-jose==3.3.0
+bcrypt==4.1.2
+
+# File processing
+pandas==2.1.4
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# Data visualization and reporting
+matplotlib==3.8.2
+seaborn==0.13.0
+reportlab==4.0.7
+plotly==5.17.0
+
+# Genetic Algorithm and optimization
+numpy==1.26.2
+scipy==1.11.4
+
+# Async and background tasks
+asyncio
+aiofiles==23.2.1
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+python-dotenv==1.0.0
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Testing (optional, for development)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Production server (optional)
+gunicorn==21.2.0
+
+# WebSocket support
+websockets==12.0
+
+# Image processing (for charts)
+Pillow==10.1.0
+
+# Excel file support
+xlsxwriter==3.1.9
+
+# JSON handling
+orjson==3.9.10
+
+# HTTP requests (for external APIs if needed)
+requests==2.31.0
+
+# Email support (if needed for notifications)
+emails==0.6
+
+# File validation
+python-magic==0.4.27
+
+# Caching (Redis support if needed)
+redis==5.0.1
+hiredis==2.2.3
+
+# Rate limiting
+slowapi==0.1.9
+
+# CORS handling (included in FastAPI but good to have explicit)
+starlette==0.27.0
+
+# UUID generation
+uuid==1.30
+
+# Timezone handling
+zoneinfo==0.2.1
+
+# Memory profiling (for development)
+memory-profiler==0.61.0
+
+# Environment variables
+environs==10.0.0
+
+# Type hints
+typing-extensions==4.8.0
+
+# FastAPI and web framework dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+pydantic-settings==2.1.0
+
+# Database dependencies
+sqlalchemy==2.0.23
+
+# Authentication
+bcrypt==4.1.2
+
+# File processing
+pandas==2.1.4
+openpyxl==3.1.2
+
+# Data visualization and reporting
+matplotlib==3.8.2
+reportlab==4.0.7
+
+# Genetic Algorithm and optimization
+numpy==1.26.2
+
+# Utilities
+python-dateutil==2.8.2
+python-dotenv==1.0.0
+
+# WebSocket support
+websockets==12.0
+
+# HTTP requests
+requests==2.31.0
+
+# Type hints
+typing-extensions==4.8.0

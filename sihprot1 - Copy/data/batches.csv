@@ -1,0 +1,5 @@
+department,level,semester,student_count,subjects
+Computer Science,UG,1,60,"Mathematics,Physics,Programming Basics"
+Computer Science,UG,2,55,"Data Structures,Database Systems,Web Development"
+Electronics,UG,1,45,"Circuit Analysis,Digital Electronics,Signals"
+Electronics,UG,2,40,"Microprocessors,Communication Systems,Control Systems"

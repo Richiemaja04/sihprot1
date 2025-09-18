@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TimetableAI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-dashboard {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .admin-tabs {
+            display: flex;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            margin-bottom: var(--spacing-xl);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: var(--spacing-lg);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .tab-btn:first-child {
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+        }
+
+        .tab-btn:last-child {
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .upload-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .upload-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            transition: all var(--transition-medium);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-card:hover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-card.dragover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .upload-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            margin-top: var(--spacing-md);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-xl);
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .generation-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .generation-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .timetable-versions {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+        }
+
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .version-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-medium);
+        }
+
+        .version-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .version-info {
+            flex: 1;
+        }
+
+        .version-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .version-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .fitness-score {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .version-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-draft {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-published {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary-color);
+        }
+
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .analytics-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-lg);
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .logs-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+        }
+
+        .log-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: var(--spacing-lg);
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .log-info {
+            flex: 1;
+        }
+
+        .log-timestamp {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .log-operation {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: var(--spacing-xs) 0;
+        }
+
+        .log-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-approve {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .btn-approve:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-publish {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary-color);
+        }
+
+        .btn-publish:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .generation-progress {
+            display: none;
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .generation-progress.active {
+            display: block;
+        }
+
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        .settings-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-xl);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .setting-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .admin-dashboard {
+                padding: 80px var(--spacing-md) var(--spacing-md);
+            }
+
+            .generation-form {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: none;
+                min-width: 120px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="admin-dashboard">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-calendar-alt"></i>
+                <span>TimetableAI Admin</span>
+            </div>
+            <div class="nav-links">
+                <span id="userGreeting" class="nav-link">Loading...</span>
+                <button class="btn-login" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header slide-up">
+            <div class="welcome-section">
+                <h1>Admin Dashboard</h1>
+                <p>Manage timetables, users, and system settings</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="refreshAllData()">
+                    <i class="fas fa-sync-alt"></i> Refresh All
+                </button>
+                <button class="btn-primary" onclick="showQuickActions()">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs slide-up-delay">
+            <button class="tab-btn active" onclick="switchTab('overview')">
+                <i class="fas fa-chart-pie"></i> Overview
+            </button>
+            <button class="tab-btn" onclick="switchTab('data')">
+                <i class="fas fa-upload"></i> Data Management
+            </button>
+            <button class="tab-btn" onclick="switchTab('generation')">
+                <i class="fas fa-cogs"></i> Generation
+            </button>
+            <button class="tab-btn" onclick="switchTab('timetables')">
+                <i class="fas fa-calendar-alt"></i> Timetables
+            </button>
+            <button class="tab-btn" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-line"></i> Analytics
+            </button>
+            <button class="tab-btn" onclick="switchTab('logs')">
+                <i class="fas fa-list"></i> Logs
+            </button>
+            <button class="tab-btn" onclick="switchTab('settings')">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <!-- System Stats -->
+            <div class="system-stats" id="systemStats">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="analytics-section">
+                <h2 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    System Overview
+                </h2>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>User Distribution Chart</p>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-calendar" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Timetable Status Overview</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Tab -->
+        <div id="data" class="tab-content">
+            <div class="upload-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Data Upload & Management
+                </h2>
+                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                    Upload CSV/Excel files to update system data. Drag and drop files or click to browse.
+                </p>
+                
+                <div class="upload-grid">
+                    <div class="upload-card" onclick="triggerFileUpload('batches')">
+                        <input type="file" id="batchesFile" class="file-input" accept=".csv,.xlsx,.xls">
+                        <div class="upload-icon">
+                            <i class="fas fa-users-class"></i>
+                        </div>
+                        <div class="upload-title">Batches</div>
+                        <div class="upload-description">Upload student batch information</div>
+                        <div class="progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-card" onclick="triggerFileUpload('subjects')">
+                        <input type="file" id="subjectsFile" class="file-input" accept=".csv,.xlsx,.xls">
+                        <div class="upload-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="upload-title">Subjects</div>
+                        <div class="upload-description">Upload subject catalog</div>
+                        <div class="progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-card" onclick="triggerFileUpload('faculty')">
+                        <input type="file" id="facultyFile" class="file-input" accept=".csv,.xlsx,.xls">
+                        <div class="upload-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="upload-title">Faculty</div>
+                        <div class="upload-description">Upload faculty information</div>
+                        <div class="progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-card" onclick="triggerFileUpload('classrooms')">
+                        <input type="file" id="classroomsFile" class="file-input" accept=".csv,.xlsx,.xls">
+                        <div class="upload-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="upload-title">Classrooms</div>
+                        <div class="upload-description">Upload classroom details</div>
+                        <div class="progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: var(--spacing-xl); text-align: center;">
+                    <button class="btn-secondary" onclick="createTeacherAccounts()">
+                        <i class="fas fa-user-plus"></i>
+                        Create Teacher Accounts
+                    </button>
+                    <button class="btn-secondary" onclick="downloadSampleFiles()">
+                        <i class="fas fa-download"></i>
+                        Download Sample Files
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generation Tab -->
+        <div id="generation" class="tab-content">
+            <div class="generation-section">
+                <h2 class="section-title">
+                    <i class="fas fa-magic"></i>
+                    AI Timetable Generation
+                </h2>
+                
+                <div class="generation-form">
+                    <div class="input-group">
+                        <label for="timetableName">Timetable Name</label>
+                        <input type="text" id="timetableName" class="form-input" 
+                               placeholder="e.g., Fall 2024 Schedule" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="timetableDescription">Description</label>
+                        <input type="text" id="timetableDescription" class="form-input" 
+                               placeholder="Optional description">
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: var(--spacing-xl);">
+                    <button class="btn-primary btn-large" onclick="generateTimetables()">
+                        <i class="fas fa-brain"></i>
+                        Generate Timetables
+                    </button>
+                </div>
+
+                <div class="generation-progress" id="generationProgress">
+                    <div class="progress-circle"></div>
+                    <h3>Generating Optimal Timetables</h3>
+                    <p id="progressMessage">Initializing genetic algorithm...</p>
+                    <div class="progress-bar" style="max-width: 400px; margin: var(--spacing-lg) auto;">
+                        <div class="progress-fill" id="generationProgressBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetables Tab -->
+        <div id="timetables" class="tab-content">
+            <div class="timetable-versions">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i>
+                        Timetable Versions
+                    </h2>
+                    <button class="btn-secondary" onclick="refreshTimetableVersions()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="version-list" id="versionList">
+                    <!-- Timetable versions will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="analytics-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    System Analytics
+                </h2>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Faculty Workload Distribution</p>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-door-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Room Utilization Analysis</p>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Schedule Distribution Heatmap</p>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Subject Type Distribution</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Tab -->
+        <div id="logs" class="tab-content">
+            <div class="logs-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Optimization Logs
+                    </h2>
+                    <button class="btn-secondary" onclick="refreshLogs()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="log-list" id="logList">
+                    <!-- Logs will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    System Settings
+                </h2>
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <h3>GA Parameters</h3>
+                        <div class="input-group">
+                            <label>Population Size</label>
+                            <input type="number" class="form-input" value="100" min="50" max="500">
+                        </div>
+                        <div class="input-group">
+                            <label>Max Generations</label>
+                            <input type="number" class="form-input" value="100" min="50" max="1000">
+                        </div>
+                        <div class="input-group">
+                            <label>Mutation Rate</label>
+                            <input type="number" class="form-input" value="0.02" min="0.01" max="0.1" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <h3>Schedule Settings</h3>
+                        <div class="input-group">
+                            <label>Hours per Day</label>
+                            <input type="number" class="form-input" value="6" min="4" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Max Consecutive Classes</label>
+                            <input type="number" class="form-input" value="4" min="2" max="6">
+                        </div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <h3>System Maintenance</h3>
+                        <button class="btn-secondary btn-full">
+                            <i class="fas fa-database"></i> Backup Database
+                        </button>
+                        <button class="btn-secondary btn-full">
+                            <i class="fas fa-trash-alt"></i> Clear Old Logs
+                        </button>
+                        <button class="btn-secondary btn-full">
+                            <i class="fas fa-sync-alt"></i> Reset System
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script>
+        class AdminDashboard {
+            constructor() {
+                this.systemStats = {};
+                this.timetableVersions = [];
+                this.optimizationLogs = [];
+                this.currentTab = 'overview';
+                
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.checkAuth();
+                    await this.loadAllData();
+                    this.renderDashboard();
+                    this.setupEventListeners();
+                    this.setupWebSocketHandlers();
+                } catch (error) {
+                    console.error('Failed to initialize admin dashboard:', error);
+                    showNotification('Failed to load admin dashboard', 'error');
+                }
+            }
+
+            async checkAuth() {
+                const userType = localStorage.getItem('user_type');
+                if (userType !== 'admin') {
+                    window.location.href = '/';
+                    return;
+                }
+
+                try {
+                    const user = await api.getCurrentUser();
+                    document.getElementById('userGreeting').textContent = `Hello, ${user.full_name}`;
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                    window.location.href = '/';
+                }
+            }
+
+            async loadAllData() {
+                try {
+                    // Load system stats
+                    this.systemStats = await api.getAdminSystemStats();
+                    
+                    // Load timetable versions
+                    this.timetableVersions = await api.getTimetableVersions();
+                    
+                    // Load optimization logs
+                    this.optimizationLogs = await api.getOptimizationLogs();
+                    
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    throw error;
+                }
+            }
+
+            renderDashboard() {
+                this.renderSystemStats();
+                this.renderTimetableVersions();
+                this.renderOptimizationLogs();
+            }
+
+            renderSystemStats() {
+                const container = document.getElementById('systemStats');
+                container.innerHTML = '';
+
+                const stats = [
+                    {
+                        icon: 'fas fa-users-class',
+                        value: this.systemStats.batches || 0,
+                        label: 'Batches',
+                        color: '#10b981'
+                    },
+                    {
+                        icon: 'fas fa-book',
+                        value: this.systemStats.subjects || 0,
+                        label: 'Subjects',
+                        color: '#f59e0b'
+                    },
+                    {
+                        icon: 'fas fa-chalkboard-teacher',
+                        value: this.systemStats.faculty || 0,
+                        label: 'Faculty',
+                        color: '#ef4444'
+                    },
+                    {
+                        icon: 'fas fa-door-open',
+                        value: this.systemStats.classrooms || 0,
+                        label: 'Rooms',
+                        color: '#8b5cf6'
+                    },
+                    {
+                        icon: 'fas fa-calendar-check',
+                        value: this.systemStats.timetable_versions || 0,
+                        label: 'Versions',
+                        color: '#06b6d4'
+                    },
+                    {
+                        icon: 'fas fa-broadcast-tower',
+                        value: this.systemStats.published_versions || 0,
+                        label: 'Published',
+                    }
+                ];
+
+                stats.forEach(stat => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card hover-lift';
+                    card.innerHTML = `
+                        <div class="stat-icon">
+                            <i class="${stat.icon}"></i>
+                        </div>
+                        <div class="stat-value">${stat.value}</div>
+                        <div class="stat-label">${stat.label}</div>
+                    `;
+                    card.style.setProperty('--stat-color', stat.color);
+                    container.appendChild(card);
+                });
+            }
+
+            renderTimetableVersions() {
+                const container = document.getElementById('versionList');
+                container.innerHTML = '';
+
+                if (this.timetableVersions.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);">
+                            <i class="fas fa-calendar-alt" style="font-size: 3rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
+                            <p>No timetable versions yet</p>
+                            <small>Generate your first timetable to get started</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.timetableVersions.forEach(version => {
+                    const card = document.createElement('div');
+                    card.className = 'version-card';
+                    
+                    const statusClass = version.is_published ? 'published' : 
+                                       version.is_approved ? 'approved' : 'draft';
+                    const statusText = version.is_published ? 'Published' : 
+                                      version.is_approved ? 'Approved' : 'Draft';
+
+                    card.innerHTML = `
+                        <div class="version-header">
+                            <div class="version-info">
+                                <div class="version-name">${version.name}</div>
+                                <div class="version-details">${version.description || 'No description'}</div>
+                                <div class="fitness-score">Fitness: ${(version.fitness_score * 100).toFixed(1)}%</div>
+                            </div>
+                            <div class="version-actions">
+                                <span class="status-badge status-${statusClass}">${statusText}</span>
+                                ${!version.is_approved ? `
+                                    <button class="btn-icon btn-approve" onclick="approveTimetable('${version.version_id}')" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                ` : ''}
+                                ${version.is_approved && !version.is_published ? `
+                                    <button class="btn-icon btn-publish" onclick="publishTimetable('${version.version_id}')" title="Publish">
+                                        <i class="fas fa-broadcast-tower"></i>
+                                    </button>
+                                ` : ''}
+                                ${!version.is_published ? `
+                                    <button class="btn-icon btn-delete" onclick="deleteTimetableVersion('${version.version_id}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+
+            renderOptimizationLogs() {
+                const container = document.getElementById('logList');
+                container.innerHTML = '';
+
+                if (this.optimizationLogs.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);">
+                            <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
+                            <p>No optimization logs yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.optimizationLogs.forEach(log => {
+                    const item = document.createElement('div');
+                    item.className = 'log-item';
+                    
+                    const statusColor = log.status === 'completed' ? '#10b981' : 
+                                       log.status === 'failed' ? '#ef4444' : '#f59e0b';
+
+                    item.innerHTML = `
+                        <div class="log-info">
+                            <div class="log-timestamp">${this.formatDate(log.created_at)}</div>
+                            <div class="log-operation">${log.operation_type} - ${log.run_id}</div>
+                            <div class="log-status" style="color: ${statusColor};">
+                                Status: ${log.status} ${log.execution_time ? `(${log.execution_time.toFixed(2)}s)` : ''}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+
+            setupEventListeners() {
+                // File upload handlers
+                ['batches', 'subjects', 'faculty', 'classrooms'].forEach(type => {
+                    const fileInput = document.getElementById(`${type}File`);
+                    if (fileInput) {
+                        fileInput.addEventListener('change', (e) => {
+                            this.handleFileUpload(type, e.target.files[0]);
+                        });
+                    }
+                });
+
+                // Drag and drop handlers
+                document.querySelectorAll('.upload-card').forEach(card => {
+                    card.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        card.classList.add('dragover');
+                    });
+
+                    card.addEventListener('dragleave', () => {
+                        card.classList.remove('dragover');
+                    });
+
+                    card.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        card.classList.remove('dragover');
+                        
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) {
+                            const type = card.onclick.toString().match(/'(\w+)'/)[1];
+                            this.handleFileUpload(type, files[0]);
+                        }
+                    });
+                });
+            }
+
+            setupWebSocketHandlers() {
+                window.addEventListener('timetableGenerationComplete', (e) => {
+                    this.hideGenerationProgress();
+                    this.refreshTimetableVersions();
+                    showNotification('Timetable generation completed!', 'success');
+                });
+
+                window.addEventListener('optimizationProgress', (e) => {
+                    const { progress, generation, fitness } = e.detail;
+                    this.updateGenerationProgress(generation, fitness);
+                });
+            }
+
+            async handleFileUpload(type, file) {
+                if (!file) return;
+
+                const card = document.querySelector(`[onclick="triggerFileUpload('${type}')"]`);
+                const progressBar = card.querySelector('.progress-bar');
+                const progressFill = card.querySelector('.progress-fill');
+                
+                progressBar.style.display = 'block';
+                
+                try {
+                    await api.uploadFileWithProgress(`/admin/upload-${type}`, file, (progress) => {
+                        progressFill.style.width = `${progress}%`;
+                    });
+                    
+                    showNotification(`${type} data uploaded successfully!`, 'success');
+                    
+                    // Refresh stats
+                    this.systemStats = await api.getAdminSystemStats();
+                    this.renderSystemStats();
+                    
+                } catch (error) {
+                    showNotification(error.message || `Failed to upload ${type} data`, 'error');
+                } finally {
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }, 1000);
+                }
+            }
+
+            async generateTimetables() {
+                const name = document.getElementById('timetableName').value;
+                const description = document.getElementById('timetableDescription').value;
+                
+                if (!name.trim()) {
+                    showNotification('Please enter a timetable name', 'warning');
+                    return;
+                }
+
+                const requestData = {
+                    name: name.trim(),
+                    description: description.trim() || null
+                };
+
+                try {
+                    this.showGenerationProgress();
+                    await api.generateTimetables(requestData);
+                    showNotification('Timetable generation started!', 'info');
+                } catch (error) {
+                    this.hideGenerationProgress();
+                    showNotification(error.message || 'Failed to start timetable generation', 'error');
+                }
+            }
+
+            showGenerationProgress() {
+                const progress = document.getElementById('generationProgress');
+                progress.classList.add('active');
+            }
+
+            hideGenerationProgress() {
+                const progress = document.getElementById('generationProgress');
+                progress.classList.remove('active');
+                
+                // Reset form
+                document.getElementById('timetableName').value = '';
+                document.getElementById('timetableDescription').value = '';
+            }
+
+            updateGenerationProgress(generation, fitness) {
+                const message = document.getElementById('progressMessage');
+                const progressBar = document.getElementById('generationProgressBar');
+                
+                message.textContent = `Generation ${generation}: Best fitness ${(fitness * 100).toFixed(1)}%`;
+                progressBar.style.width = `${(generation / 100) * 100}%`;
+            }
+
+            async refreshTimetableVersions() {
+                try {
+                    this.timetableVersions = await api.getTimetableVersions();
+                    this.renderTimetableVersions();
+                    showNotification('Timetable versions refreshed!', 'success');
+                } catch (error) {
+                    showNotification('Failed to refresh timetable versions', 'error');
+                }
+            }
+
+            async refreshLogs() {
+                try {
+                    this.optimizationLogs = await api.getOptimizationLogs();
+                    this.renderOptimizationLogs();
+                    showNotification('Logs refreshed!', 'success');
+                } catch (error) {
+                    showNotification('Failed to refresh logs', 'error');
+                }
+            }
+
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+
+        // Global functions
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            if (window.adminDashboard) {
+                window.adminDashboard.currentTab = tabName;
+            }
+        }
+
+        function triggerFileUpload(type) {
+            document.getElementById(`${type}File`).click();
+        }
+
+        async function generateTimetables() {
+            if (window.adminDashboard) {
+                await window.adminDashboard.generateTimetables();
+            }
+        }
+
+        async function approveTimetable(versionId) {
+            try {
+                await api.approveTimetable(versionId);
+                showNotification('Timetable approved successfully!', 'success');
+                if (window.adminDashboard) {
+                    await window.adminDashboard.refreshTimetableVersions();
+                }
+            } catch (error) {
+                showNotification(error.message || 'Failed to approve timetable', 'error');
+            }
+        }
+
+        async function publishTimetable(versionId) {
+            try {
+                await api.publishTimetable(versionId);
+                showNotification('Timetable published successfully!', 'success');
+                if (window.adminDashboard) {
+                    await window.adminDashboard.refreshTimetableVersions();
+                }
+            } catch (error) {
+                showNotification(error.message || 'Failed to publish timetable', 'error');
+            }
+        }
+
+        async function deleteTimetableVersion(versionId) {
+            if (!confirm('Are you sure you want to delete this timetable version?')) {
+                return;
+            }
+
+            try {
+                await api.deleteTimetableVersion(versionId);
+                showNotification('Timetable version deleted successfully!', 'success');
+                if (window.adminDashboard) {
+                    await window.adminDashboard.refreshTimetableVersions();
+                }
+            } catch (error) {
+                showNotification(error.message || 'Failed to delete timetable version', 'error');
+            }
+        }
+
+        async function createTeacherAccounts() {
+            try {
+                const response = await api.createTeacherAccounts();
+                showNotification(response.message, 'success');
+            } catch (error) {
+                showNotification(error.message || 'Failed to create teacher accounts', 'error');
+            }
+        }
+
+        function downloadSampleFiles() {
+            showNotification('Sample files download will be available soon!', 'info');
+        }
+
+        async function refreshAllData() {
+            if (window.adminDashboard) {
+                try {
+                    await window.adminDashboard.loadAllData();
+                    window.adminDashboard.renderDashboard();
+                    showNotification('All data refreshed!', 'success');
+                } catch (error) {
+                    showNotification('Failed to refresh data', 'error');
+                }
+            }
+        }
+
+        function refreshTimetableVersions() {
+            if (window.adminDashboard) {
+                window.adminDashboard.refreshTimetableVersions();
+            }
+        }
+
+        function refreshLogs() {
+            if (window.adminDashboard) {
+                window.adminDashboard.refreshLogs();
+            }
+        }
+
+        function showQuickActions() {
+            showNotification('Quick actions menu coming soon!', 'info');
+        }
+
+        async function logout() {
+            try {
+                await api.logout();
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.adminDashboard = new AdminDashboard();
+        });
+    </script>
+</body>
+</html>

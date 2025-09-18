@@ -1,0 +1,7 @@
+employee_id,full_name,email,department,subject_name
+FAC001,Dr. John Smith,john.smith@university.edu,Computer Science,"Mathematics,Programming Basics"
+FAC002,Prof. Jane Doe,jane.doe@university.edu,Computer Science,"Data Structures,Database Systems"
+FAC003,Dr. Mike Johnson,mike.johnson@university.edu,Computer Science,"Web Development,Programming Basics"
+FAC004,Prof. Sarah Wilson,sarah.wilson@university.edu,Electronics,"Circuit Analysis,Digital Electronics"
+FAC005,Dr. Robert Brown,robert.brown@university.edu,Electronics,"Signals,Communication Systems"
+FAC006,Prof. Emily Davis,emily.davis@university.edu,Electronics,"Microprocessors,Control Systems"

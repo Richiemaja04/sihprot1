@@ -1,0 +1,13 @@
+name,code,credits,type,department
+Mathematics,MATH101,4,Theory,Computer Science
+Physics,PHY101,3,Theory,Computer Science
+Programming Basics,CS101,4,Lab,Computer Science
+Data Structures,CS201,4,Theory,Computer Science
+Database Systems,CS202,3,Theory,Computer Science
+Web Development,CS203,3,Lab,Computer Science
+Circuit Analysis,EE101,4,Theory,Electronics
+Digital Electronics,EE102,3,Lab,Electronics
+Signals,EE103,3,Theory,Electronics
+Microprocessors,EE201,4,Lab,Electronics
+Communication Systems,EE202,3,Theory,Electronics
+Control Systems,EE203,3,Theory,Electronics

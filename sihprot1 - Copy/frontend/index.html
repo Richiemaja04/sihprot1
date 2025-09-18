@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Scheduler - AI-Powered Academic Planning</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="landing-page">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-calendar-alt"></i>
+                <span>TimetableAI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <button class="btn-login" onclick="showLoginModal()">
+                    <i class="fas fa-user"></i> Staff Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text slide-up">
+                    <h1 class="hero-title">
+                        AI-Powered <span class="gradient-text">Timetable</span> Scheduler
+                    </h1>
+                    <p class="hero-subtitle">
+                        Experience the future of academic planning with our intelligent genetic algorithm-powered timetable system. 
+                        Optimized scheduling, conflict-free classes, and seamless management.
+                    </p>
+                </div>
+                
+                <!-- Student Timetable Access -->
+                <div class="timetable-access glass-card slide-up-delay">
+                    <h2>
+                        <i class="fas fa-graduation-cap"></i>
+                        View Your Timetable
+                    </h2>
+                    <p>Select your program and semester to access your personalized class schedule</p>
+                    
+                    <div class="selection-form">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="department">Department</label>
+                                <select id="department" class="form-select">
+                                    <option value="">Choose Department...</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="level">Level</label>
+                                <select id="level" class="form-select" disabled>
+                                    <option value="">Choose Level...</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="semester">Semester</label>
+                                <select id="semester" class="form-select" disabled>
+                                    <option value="">Choose Semester...</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <button id="viewTimetableBtn" class="btn-primary btn-large" disabled>
+                                    <i class="fas fa-calendar-check"></i>
+                                    View Timetable
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose TimetableAI?</h2>
+            <div class="features-grid">
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Optimization</h3>
+                    <p>Advanced genetic algorithm ensures conflict-free, optimal scheduling with intelligent resource allocation.</p>
+                </div>
+                
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Real-Time Updates</h3>
+                    <p>Instant notifications and live updates via WebSocket ensure everyone stays informed of schedule changes.</p>
+                </div>
+                
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Comprehensive analytics on faculty workload, room utilization, and schedule optimization metrics.</p>
+                </div>
+                
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Access your timetable anywhere, anytime with our fully responsive and mobile-optimized interface.</p>
+                </div>
+                
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3>Multi-Role Management</h3>
+                    <p>Seamless role-based access for students, teachers, and administrators with personalized dashboards.</p>
+                </div>
+                
+                <div class="feature-card glass-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3>Export & Reports</h3>
+                    <p>Generate PDF reports, export schedules, and create detailed analytics for institutional planning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBatches">0</div>
+                    <div class="stat-label">Active Batches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalFaculty">0</div>
+                    <div class="stat-label">Faculty Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRooms">0</div>
+                    <div class="stat-label">Classrooms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalClasses">0</div>
+                    <div class="stat-label">Scheduled Classes</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>Staff Login</h2>
+                <span class="close-btn" onclick="hideLoginModal()">×</span>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" class="login-form">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-options">
+                        <div class="user-type-selection">
+                            <label>Login as:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="userType" value="teacher" checked>
+                                    <span class="radio-custom"></span>
+                                    Teacher
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="userType" value="admin">
+                                    <span class="radio-custom"></span>
+                                    Admin
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+                <div class="login-help">
+                    <p><strong>Default Passwords:</strong></p>
+                    <p>Teacher: 12345 | Admin: 123456</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize the landing page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadPrograms();
+            await loadSystemStats();
+            initializeAnimations();
+        });
+    </script>
+</body>
+</html>
